@@ -1,0 +1,61 @@
+dcbuild
+
+dcup
+
+dockps
+
+ba31f453a3e3  seed-attacker
+7d97cdad9eb9  user1-10.9.0.6
+c41de80c0026  user2-10.9.0.7
+b85a93b8ff0e  victim-10.9.0.5
+
+
+docksh seed-attacker
+docksh victim-10.9.0.5
+docksh user1-10.9.0.6
+
+
+go to victim machine
+netstat -nat
+
+
+go to user1 -10.9.0.6
+telnet 10.9.0.5. [user1 set remote connection to victim Server  6 -> 5]
+
+
+Again go to victim machine to check [server]
+Netstat -nat
+[It will established the remote connection with the user1]
+
+
+sysctl -a | grep syncookies
+it sets the syncookies to 0 so it will disabkles cookies gto launch the attack
+
+
+go to seed-attacker
+go to volume folder la volumes/
+ifconfig
+get the container id ‘br-85a24fcfd2f6’ for 10.9.0.1
+
+
+go to victim machine
+sysctl -w net.ipv4.tcp_max_syn_backlog=80
+ip tcp_metrics show
+netstat -tna | grep -i syn_recv | wc -l
+
+
+go to seed-attacker
+python3 synflood.py [be ready with the python file]
+
+
+go to victim machine
+ip tcp_metrics show
+netstat -tna | grep -i syn_recv | wc -l
+ss -n state syn-recv sport = :23 | wc -l
+netstat -tna
+trace the packets into wireshark
+
+
+User machine
+exit from the telnet connection
+again check in the victim machine connections = 0
